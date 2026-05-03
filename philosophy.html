@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHILOSOPHIA — The Complete Universe of Thought</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #c9a84c;
+  --gold-light: #f0d080;
+  --gold-dim: #7a6030;
+  --ink: #0a0806;
+  --parchment: #f5ead8;
+  --smoke: #1a1510;
+  --ember: #d4541a;
+  --sage: #4a7c59;
+  --lapis: #2a4a7a;
+  --marble: #e8e0d4;
+  --text: #c8b99a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: 'EB Garamond', Georgia, serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CURSOR ── */
+#cur { position:fixed; width:16px; height:16px; border:1px solid var(--gold); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:width .2s,height .2s,border-color .2s; mix-blend-mode:screen; }
+#cur2 { position:fixed; width:5px; height:5px; background:var(--gold); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); box-shadow:0 0 8px var(--gold); }
+body:hover #cur { border-color:var(--gold-light); }
+
+/* ── CANVAS ── */
+#c3d { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; }
+
+/* ── NOISE OVERLAY ── */
+.noise { position:fixed; inset:0; z-index:2; pointer-events:none; opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size:200px; }
+
+/* ── VIGNETTE ── */
+.vig { position:fixed; inset:0; z-index:3; pointer-events:none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(5,3,2,.9) 100%); }
+
+/* ── NAV ── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:20px 48px;
+  background:linear-gradient(to bottom, rgba(10,8,6,.95), transparent);
+  border-bottom:1px solid rgba(201,168,76,.1);
+}
+.nav-logo { font-family:'Cinzel',serif; font-size:22px; font-weight:900; color:var(--gold); letter-spacing:4px; text-shadow:0 0 30px rgba(201,168,76,.4); }
+.nav-logo span { color:var(--text); font-weight:400; font-size:11px; display:block; letter-spacing:8px; margin-top:2px; }
+.nav-links { display:flex; gap:32px; }
+.nav-links a { font-family:'Rajdhani',sans-serif; font-size:12px; letter-spacing:3px; text-transform:uppercase; color:rgba(200,185,154,.5); text-decoration:none; transition:color .3s; cursor:none; }
+.nav-links a:hover { color:var(--gold); }
+.nav-era { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:2px; color:rgba(201,168,76,.4); }
+
+/* ── HERO ── */
+#hero {
+  position:relative; z-index:10; min-height:100vh;
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+  text-align:center; padding:120px 40px 80px;
+}
+.hero-eyebrow { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:8px; text-transform:uppercase; color:var(--gold-dim); margin-bottom:24px; animation:fadeUp 1.2s ease both; }
+.hero-title { font-family:'Cinzel',serif; font-size:clamp(56px,9vw,130px); font-weight:900; line-height:.9; color:var(--gold); text-shadow:0 0 80px rgba(201,168,76,.3),0 2px 0 rgba(0,0,0,.8); animation:fadeUp 1.2s .2s ease both; letter-spacing:-1px; }
+.hero-title em { font-style:italic; color:var(--gold-light); }
+.hero-subtitle { font-family:'EB Garamond',serif; font-size:clamp(16px,2.5vw,22px); font-style:italic; color:var(--marble); opacity:.6; margin-top:20px; max-width:600px; animation:fadeUp 1.2s .4s ease both; }
+.hero-line { width:1px; height:60px; background:linear-gradient(to bottom,var(--gold),transparent); margin:32px auto; animation:fadeUp 1.2s .6s ease both; }
+.hero-quote { font-size:14px; font-style:italic; color:rgba(200,185,154,.5); max-width:400px; animation:fadeUp 1.2s .8s ease both; }
+.hero-quote cite { display:block; margin-top:8px; font-style:normal; font-family:'Rajdhani',sans-serif; letter-spacing:3px; font-size:11px; color:var(--gold-dim); }
+.scroll-hint { position:absolute; bottom:40px; left:50%; transform:translateX(-50%); font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:4px; color:rgba(201,168,76,.3); animation:pulse 2s infinite; }
+.scroll-hint::after { content:''; display:block; width:1px; height:30px; background:linear-gradient(to bottom,var(--gold-dim),transparent); margin:10px auto 0; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:.8} }
+
+/* ── SECTION BASE ── */
+section { position:relative; z-index:10; }
+.section-wrap { max-width:1400px; margin:0 auto; padding:100px 48px; }
+.section-header { text-align:center; margin-bottom:80px; }
+.section-eyebrow { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:6px; text-transform:uppercase; color:var(--gold-dim); margin-bottom:16px; }
+.section-title { font-family:'Cinzel',serif; font-size:clamp(32px,5vw,56px); font-weight:600; color:var(--gold); }
+.section-rule { width:80px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:20px auto; }
+.section-desc { font-size:17px; font-style:italic; color:rgba(200,185,154,.6); max-width:600px; margin:0 auto; line-height:1.7; }
+
+/* ── SCHOOL CARDS ── */
+.school-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:2px; }
+.school-card {
+  background:linear-gradient(135deg,rgba(201,168,76,.04),rgba(201,168,76,.01));
+  border:1px solid rgba(201,168,76,.12);
+  padding:40px 36px;
+  transition:all .5s cubic-bezier(.16,1,.3,1);
+  cursor:none;
+  position:relative;
+  overflow:hidden;
+}
+.school-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(201,168,76,.08),transparent); opacity:0; transition:opacity .4s; }
+.school-card::after { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); transform:scaleX(0); transition:transform .5s; }
+.school-card:hover { border-color:rgba(201,168,76,.35); transform:translateY(-4px); box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 40px rgba(201,168,76,.05); }
+.school-card:hover::before { opacity:1; }
+.school-card:hover::after { transform:scaleX(1); }
+.card-era { font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:4px; text-transform:uppercase; color:var(--gold-dim); margin-bottom:12px; }
+.card-name { font-family:'Cinzel',serif; font-size:22px; font-weight:600; color:var(--gold-light); margin-bottom:8px; }
+.card-region { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:3px; color:var(--sage); margin-bottom:16px; }
+.card-desc { font-size:15px; line-height:1.75; color:rgba(200,185,154,.7); margin-bottom:20px; }
+.card-thinkers { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px; }
+.thinker-tag { font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:2px; padding:4px 10px; border:1px solid rgba(201,168,76,.2); color:var(--gold-dim); }
+.card-concepts { font-size:13px; font-style:italic; color:rgba(200,185,154,.4); line-height:1.6; }
+.card-icon { font-size:32px; margin-bottom:20px; }
+
+/* ── TIMELINE ── */
+#timeline-section { background:linear-gradient(to bottom,transparent,rgba(201,168,76,.02),transparent); }
+.timeline { position:relative; padding:0 0 40px; }
+.timeline::before { content:''; position:absolute; left:50%; top:0; bottom:0; width:1px; background:linear-gradient(to bottom,transparent,var(--gold-dim),var(--gold-dim),transparent); transform:translateX(-50%); }
+.t-item { display:flex; align-items:flex-start; gap:40px; margin-bottom:60px; position:relative; }
+.t-item:nth-child(even) { flex-direction:row-reverse; }
+.t-item:nth-child(even) .t-content { text-align:right; }
+.t-dot { position:absolute; left:50%; transform:translateX(-50%); width:12px; height:12px; border:2px solid var(--gold); background:var(--ink); border-radius:50%; box-shadow:0 0 12px rgba(201,168,76,.4); flex-shrink:0; top:6px; }
+.t-content { width:calc(50% - 50px); }
+.t-year { font-family:'Cinzel',serif; font-size:13px; color:var(--gold); letter-spacing:2px; margin-bottom:6px; }
+.t-name { font-family:'Cinzel',serif; font-size:20px; color:var(--gold-light); margin-bottom:8px; }
+.t-text { font-size:14px; line-height:1.7; color:rgba(200,185,154,.6); }
+.t-quote { font-style:italic; font-size:13px; color:rgba(200,185,154,.4); margin-top:8px; border-left:2px solid rgba(201,168,76,.2); padding-left:12px; }
+.t-item:nth-child(even) .t-quote { border-left:none; border-right:2px solid rgba(201,168,76,.2); padding-left:0; padding-right:12px; }
+
+/* ── PHILOSOPHER PROFILES ── */
+.phil-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:24px; }
+.phil-card {
+  border:1px solid rgba(201,168,76,.1);
+  padding:32px 28px;
+  cursor:none;
+  transition:all .4s cubic-bezier(.16,1,.3,1);
+  position:relative;
+  background:linear-gradient(180deg,rgba(201,168,76,.03) 0%,transparent 100%);
+}
+.phil-card:hover { border-color:rgba(201,168,76,.3); transform:translateY(-3px); box-shadow:0 16px 50px rgba(0,0,0,.5); }
+.phil-num { font-family:'Cinzel',serif; font-size:11px; color:rgba(201,168,76,.2); letter-spacing:3px; margin-bottom:12px; }
+.phil-name { font-family:'Cinzel',serif; font-size:18px; color:var(--gold-light); margin-bottom:4px; }
+.phil-life { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:2px; color:var(--gold-dim); margin-bottom:4px; }
+.phil-origin { font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:2px; color:var(--sage); margin-bottom:14px; }
+.phil-school { display:inline-block; font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:2px; padding:3px 8px; border:1px solid rgba(201,168,76,.15); color:var(--gold-dim); margin-bottom:12px; }
+.phil-desc { font-size:13px; line-height:1.7; color:rgba(200,185,154,.55); margin-bottom:14px; }
+.phil-quote { font-style:italic; font-size:12px; color:rgba(200,185,154,.35); border-top:1px solid rgba(201,168,76,.08); padding-top:12px; line-height:1.6; }
+.phil-key { font-size:12px; color:var(--gold-dim); margin-top:8px; }
+
+/* ── BOOKS SECTION ── */
+.books-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:2px; }
+.book-card {
+  padding:32px 28px;
+  border:1px solid rgba(201,168,76,.08);
+  transition:all .4s ease;
+  cursor:none;
+  position:relative;
+  background:rgba(201,168,76,.01);
+}
+.book-card:hover { border-color:rgba(201,168,76,.25); background:rgba(201,168,76,.03); }
+.book-level { font-family:'Rajdhani',sans-serif; font-size:9px; letter-spacing:4px; text-transform:uppercase; padding:3px 10px; border:1px solid; margin-bottom:16px; display:inline-block; }
+.book-level.beginner { color:var(--sage); border-color:rgba(74,124,89,.4); }
+.book-level.intermediate { color:var(--gold); border-color:rgba(201,168,76,.4); }
+.book-level.advanced { color:var(--ember); border-color:rgba(212,84,26,.4); }
+.book-level.essential { color:var(--lapis); border-color:rgba(42,74,122,.6); background:rgba(42,74,122,.1); }
+.book-title { font-family:'Cinzel',serif; font-size:17px; color:var(--gold-light); margin-bottom:6px; line-height:1.3; }
+.book-author { font-family:'Rajdhani',sans-serif; font-size:12px; letter-spacing:2px; color:var(--gold-dim); margin-bottom:12px; }
+.book-why { font-size:13px; line-height:1.7; color:rgba(200,185,154,.55); }
+.book-branch { font-size:11px; color:rgba(200,185,154,.3); margin-top:10px; font-style:italic; }
+
+/* ── BRANCHES MAP ── */
+.branches-wrap { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; }
+.branch-block { padding:32px; border:1px solid rgba(201,168,76,.1); position:relative; transition:all .4s; cursor:none; }
+.branch-block:hover { border-color:rgba(201,168,76,.3); background:rgba(201,168,76,.02); }
+.branch-icon { font-size:28px; margin-bottom:16px; }
+.branch-name { font-family:'Cinzel',serif; font-size:20px; color:var(--gold); margin-bottom:8px; }
+.branch-sub { font-size:14px; line-height:1.7; color:rgba(200,185,154,.6); margin-bottom:16px; }
+.branch-topics { display:flex; flex-direction:column; gap:6px; }
+.branch-topic { font-size:13px; color:rgba(200,185,154,.4); padding-left:14px; position:relative; }
+.branch-topic::before { content:'—'; position:absolute; left:0; color:var(--gold-dim); }
+
+/* ── TABS ── */
+.tab-nav { display:flex; gap:0; border-bottom:1px solid rgba(201,168,76,.15); margin-bottom:48px; overflow-x:auto; }
+.tab-btn { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:3px; text-transform:uppercase; padding:14px 24px; background:none; border:none; color:rgba(200,185,154,.4); cursor:none; transition:all .3s; white-space:nowrap; border-bottom:1px solid transparent; margin-bottom:-1px; }
+.tab-btn.active,.tab-btn:hover { color:var(--gold); border-bottom-color:var(--gold); }
+.tab-panel { display:none; }
+.tab-panel.active { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:2px; animation:fadeIn .4s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── READING PATH ── */
+.path-wrap { display:flex; flex-direction:column; gap:0; max-width:900px; margin:0 auto; }
+.path-step {
+  display:grid; grid-template-columns:80px 1fr; gap:32px;
+  padding:32px 0; border-bottom:1px solid rgba(201,168,76,.08);
+  align-items:start;
+}
+.path-num { font-family:'Cinzel',serif; font-size:48px; color:rgba(201,168,76,.1); font-weight:900; line-height:1; }
+.path-phase { font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:4px; color:var(--gold-dim); margin-bottom:8px; }
+.path-title { font-family:'Cinzel',serif; font-size:22px; color:var(--gold-light); margin-bottom:10px; }
+.path-desc { font-size:15px; line-height:1.75; color:rgba(200,185,154,.6); margin-bottom:16px; }
+.path-books { display:flex; flex-wrap:wrap; gap:8px; }
+.path-book-tag { font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:2px; padding:5px 12px; border:1px solid rgba(201,168,76,.2); color:var(--gold-dim); }
+
+/* ── FOOTER ── */
+footer { position:relative; z-index:10; border-top:1px solid rgba(201,168,76,.1); padding:60px 48px; text-align:center; }
+.footer-logo { font-family:'Cinzel',serif; font-size:28px; color:var(--gold); letter-spacing:6px; margin-bottom:12px; }
+.footer-motto { font-size:14px; font-style:italic; color:rgba(200,185,154,.3); margin-bottom:32px; }
+.footer-links { display:flex; justify-content:center; gap:32px; margin-bottom:24px; }
+.footer-links a { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:3px; color:rgba(200,185,154,.3); text-decoration:none; cursor:none; }
+.footer-copy { font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:2px; color:rgba(200,185,154,.2); }
+
+/* ── SCROLL REVEAL ── */
+.reveal { opacity:0; transform:translateY(40px); transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1); }
+.reveal.visible { opacity:1; transform:none; }
+
+/* ── DIVIDERS ── */
+.ornament { text-align:center; color:rgba(201,168,76,.2); font-size:20px; margin:20px 0; letter-spacing:8px; }
+
+/* MODAL */
+.modal-bg { display:none; position:fixed; inset:0; z-index:500; background:rgba(5,3,2,.92); backdrop-filter:blur(8px); align-items:center; justify-content:center; }
+.modal-bg.open { display:flex; }
+.modal { background:var(--smoke); border:1px solid rgba(201,168,76,.2); max-width:700px; width:90%; max-height:85vh; overflow-y:auto; padding:48px; position:relative; animation:fadeUp .4s ease; }
+.modal-close { position:absolute; top:20px; right:20px; font-family:'Rajdhani',sans-serif; font-size:20px; color:var(--gold-dim); cursor:none; background:none; border:none; }
+.modal-title { font-family:'Cinzel',serif; font-size:28px; color:var(--gold); margin-bottom:8px; }
+.modal-sub { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:3px; color:var(--sage); margin-bottom:24px; }
+.modal-body { font-size:15px; line-height:1.85; color:rgba(200,185,154,.7); }
+.modal-body h3 { font-family:'Cinzel',serif; font-size:16px; color:var(--gold-light); margin:20px 0 8px; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:var(--ink); }
+::-webkit-scrollbar-thumb { background:var(--gold-dim); }
+
+/* responsive */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .section-wrap{padding:60px 24px}
+  .timeline::before{left:20px}
+  .t-item,.t-item:nth-child(even){flex-direction:column;align-items:flex-start;padding-left:50px}
+  .t-dot{left:20px}
+  .t-content,.t-item:nth-child(even) .t-content{width:100%;text-align:left}
+  .t-item:nth-child(even) .t-quote{border-left:2px solid rgba(201,168,76,.2);border-right:none;padding-left:12px;padding-right:0}
+  nav{padding:16px 24px}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+<canvas id="c3d"></canvas>
+<div class="noise"></div>
+<div class="vig"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">PHILOSOPHIA<span>THE COMPLETE UNIVERSE OF THOUGHT</span></div>
+  <div class="nav-links">
+    <a href="#schools">Schools</a>
+    <a href="#timeline-section">Timeline</a>
+    <a href="#thinkers">Thinkers</a>
+    <a href="#branches">Branches</a>
+    <a href="#books">Library</a>
+    <a href="#path">Your Path</a>
+  </div>
+  <div class="nav-era" id="nav-quote">"The unexamined life is not worth living"</div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-eyebrow">∴ Since 624 BC — The Eternal Inquiry</div>
+  <h1 class="hero-title">PHILO<br><em>SOPHIA</em></h1>
+  <p class="hero-subtitle">Love of Wisdom — The complete map of human thought, from the first question to the last answer</p>
+  <div class="hero-line"></div>
+  <p class="hero-quote">
+    "Wonder is the beginning of wisdom."
+    <cite>— Socrates</cite>
+  </p>
+  <div class="scroll-hint">Scroll to Explore</div>
+</section>
+
+<!-- WHAT IS PHILOSOPHY -->
+<section id="what">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">∴ The First Question</div>
+      <h2 class="section-title">What is Philosophy?</h2>
+      <div class="section-rule"></div>
+      <p class="section-desc">Philosophy — from Greek <em>philos</em> (love) + <em>sophia</em> (wisdom) — is the systematic inquiry into existence, knowledge, values, reason, mind, and language.</p>
+    </div>
+    <div class="branches-wrap reveal">
+      <div class="branch-block">
+        <div class="branch-icon">⚖️</div>
+        <div class="branch-name">Metaphysics</div>
+        <div class="branch-sub">The study of fundamental nature of reality — what exists, what it means to exist, and how the universe is structured.</div>
+        <div class="branch-topics">
+          <div class="branch-topic">What is real?</div>
+          <div class="branch-topic">Do we have free will?</div>
+          <div class="branch-topic">What is consciousness?</div>
+          <div class="branch-topic">What is time and space?</div>
+        </div>
+      </div>
+      <div class="branch-block">
+        <div class="branch-icon">🔍</div>
+        <div class="branch-name">Epistemology</div>
+        <div class="branch-sub">The study of knowledge — how we know what we know, the limits of knowledge, and the nature of truth.</div>
+        <div class="branch-topics">
+          <div class="branch-topic">What can we know?</div>
+          <div class="branch-topic">Is knowledge certain?</div>
+          <div class="branch-topic">What is truth?</div>
+          <div class="branch-topic">Can we trust our senses?</div>
+        </div>
+      </div>
+      <div class="branch-block">
+        <div class="branch-icon">🌿</div>
+        <div class="branch-name">Ethics</div>
+        <div class="branch-sub">The study of morality — what is right and wrong, how we should live, and the foundations of moral judgment.</div>
+        <div class="branch-topics">
+          <div class="branch-topic">What is good?</div>
+          <div class="branch-topic">How should we live?</div>
+          <div class="branch-topic">What are our duties?</div>
+          <div class="branch-topic">What is justice?</div>
+        </div>
+      </div>
+      <div class="branch-block">
+        <div class="branch-icon">💬</div>
+        <div class="branch-name">Logic</div>
+        <div class="branch-sub">The study of valid reasoning — the rules of inference, argument structure, and the foundations of rational thought.</div>
+        <div class="branch-topics">
+          <div class="branch-topic">What makes an argument valid?</div>
+          <div class="branch-topic">Deductive vs inductive</div>
+          <div class="branch-topic">Formal symbolic logic</div>
+          <div class="branch-topic">Fallacies and paradoxes</div>
+        </div>
+      </div>
+      <div class="branch-block">
+        <div class="branch-icon">🏛️</div>
+        <div class="branch-name">Political Philosophy</div>
+        <div class="branch-sub">The study of governance, justice, rights, and the ideal organization of society and the state.</div>
+        <div class="branch-topics">
+          <div class="branch-topic">What is justice?</div>
+          <div class="branch-topic">What is the social contract?</div>
+          <div class="branch-topic">Democracy vs authoritarianism</div>
+          <div class="branch-topic">Rights and obligations</div>
+        </div>
+      </div>
+      <div class="branch-block">
+        <div class="branch-icon">✨</div>
+        <div class="branch-name">Aesthetics</div>
+        <div class="branch-sub">The study of beauty, art, and taste — what makes something beautiful and the nature of artistic experience.</div>
+        <div class="branch-topics">
+          <div class="branch-topic">What is beauty?</div>
+          <div class="branch-topic">What is art?</div>
+          <div class="branch-topic">Sublime vs beautiful</div>
+          <div class="branch-topic">Meaning in art</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCHOOLS OF PHILOSOPHY -->
+<section id="schools" style="background:linear-gradient(to bottom,transparent,rgba(10,8,6,.8),transparent)">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">∴ Major Traditions</div>
+      <h2 class="section-title">Schools of Thought</h2>
+      <div class="section-rule"></div>
+      <p class="section-desc">Every great tradition of philosophy — from the banks of the Ganges to the streets of Athens — has wrestled with the same eternal questions.</p>
+    </div>
+
+    <div class="tab-nav reveal">
+      <button class="tab-btn active" onclick="switchTab('western')">Western</button>
+      <button class="tab-btn" onclick="switchTab('eastern')">Eastern</button>
+      <button class="tab-btn" onclick="switchTab('modern')">Modern</button>
+      <button class="tab-btn" onclick="switchTab('contemporary')">Contemporary</button>
+    </div>
+
+    <div id="tab-western" class="tab-panel active">
+      <div class="school-card">
+        <div class="card-era">600 BC – 300 BC</div>
+        <div class="card-icon">🏛️</div>
+        <div class="card-name">Pre-Socratic Philosophy</div>
+        <div class="card-region">⟡ Ancient Greece — Ionia, Magna Graecia</div>
+        <div class="card-desc">The first philosophers sought natural explanations for the cosmos — moving beyond myth and gods to reason about the fundamental substance of all things. They invented rational inquiry itself.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Thales</span><span class="thinker-tag">Heraclitus</span><span class="thinker-tag">Parmenides</span><span class="thinker-tag">Pythagoras</span><span class="thinker-tag">Democritus</span>
+        </div>
+        <div class="card-concepts">Arche (first substance) · Logos · Atomism · The One vs the Many · Flux and Permanence</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">470 BC – 322 BC</div>
+        <div class="card-icon">⚗️</div>
+        <div class="card-name">Classical Greek Philosophy</div>
+        <div class="card-region">⟡ Athens, Ancient Greece</div>
+        <div class="card-desc">The golden age — Socrates turned philosophy inward to the human soul, Plato built grand metaphysical systems with ideal Forms, and Aristotle catalogued all of knowledge with his comprehensive method.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Socrates</span><span class="thinker-tag">Plato</span><span class="thinker-tag">Aristotle</span><span class="thinker-tag">Xenophon</span>
+        </div>
+        <div class="card-concepts">Theory of Forms · Virtue Ethics · The Examined Life · Dialectic · Four Causes · Eudaimonia</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">300 BC – 200 AD</div>
+        <div class="card-icon">🌿</div>
+        <div class="card-name">Hellenistic Schools</div>
+        <div class="card-region">⟡ Athens, Alexandria, Rome</div>
+        <div class="card-desc">After Alexander the Great spread Greek culture, philosophy turned toward personal ethics and happiness. How does one live a good life in an uncertain world? Four distinct schools answered this differently.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Epicurus</span><span class="thinker-tag">Zeno of Citium</span><span class="thinker-tag">Pyrrho</span><span class="thinker-tag">Plotinus</span>
+        </div>
+        <div class="card-concepts">Epicureanism (pleasure) · Stoicism (virtue) · Skepticism (suspension) · Neo-Platonism (the One)</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">200 – 1400 AD</div>
+        <div class="card-icon">✝️</div>
+        <div class="card-name">Medieval Philosophy</div>
+        <div class="card-region">⟡ Europe, Islamic World, Byzantium</div>
+        <div class="card-desc">Faith and reason met and clashed. Scholasticism attempted to reconcile Greek philosophy — especially Aristotle — with Christian, Islamic, and Jewish theology. The great questions concerned God, creation, and soul.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Augustine</span><span class="thinker-tag">Aquinas</span><span class="thinker-tag">Avicenna</span><span class="thinker-tag">Averroes</span><span class="thinker-tag">Maimonides</span><span class="thinker-tag">Anselm</span>
+        </div>
+        <div class="card-concepts">Scholasticism · Natural Theology · Divine Command · Universals · Ontological Argument</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">1500 – 1800 AD</div>
+        <div class="card-icon">🌍</div>
+        <div class="card-name">Early Modern Philosophy</div>
+        <div class="card-region">⟡ France, Britain, Germany, Netherlands</div>
+        <div class="card-desc">The Scientific Revolution demanded new theories of knowledge. Rationalists trusted reason; Empiricists trusted experience. Kant attempted a synthesis, and the Enlightenment reframed political philosophy around liberty and rights.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Descartes</span><span class="thinker-tag">Spinoza</span><span class="thinker-tag">Locke</span><span class="thinker-tag">Hume</span><span class="thinker-tag">Kant</span><span class="thinker-tag">Leibniz</span>
+        </div>
+        <div class="card-concepts">Cogito Ergo Sum · Tabula Rasa · Causation · Categorical Imperative · Social Contract · Substance Monism</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">1800 – 1900 AD</div>
+        <div class="card-icon">⚙️</div>
+        <div class="card-name">19th Century Philosophy</div>
+        <div class="card-region">⟡ Germany, Britain, Denmark</div>
+        <div class="card-desc">Kant's followers split: Idealists like Hegel built vast historical systems; Marx inverted Hegel materialistically; Kierkegaard and Nietzsche reacted against both with existential urgency; Utilitarians calculated morality.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Hegel</span><span class="thinker-tag">Marx</span><span class="thinker-tag">Nietzsche</span><span class="thinker-tag">Kierkegaard</span><span class="thinker-tag">Mill</span><span class="thinker-tag">Schopenhauer</span>
+        </div>
+        <div class="card-concepts">Dialectics · Will to Power · Overman · Utilitarianism · German Idealism · Historical Materialism</div>
+      </div>
+    </div>
+
+    <div id="tab-eastern" class="tab-panel">
+      <div class="school-card">
+        <div class="card-era">800 BC – present</div>
+        <div class="card-icon">🕉️</div>
+        <div class="card-name">Hindu Philosophy (Darshanas)</div>
+        <div class="card-region">⟡ Indian Subcontinent</div>
+        <div class="card-desc">Six classical schools (Astika) of Hindu thought, each offering a unique view of consciousness, reality, liberation, and the self. Among the most sophisticated philosophical traditions in human history.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Adi Shankaracharya</span><span class="thinker-tag">Ramanuja</span><span class="thinker-tag">Madhva</span><span class="thinker-tag">Patanjali</span><span class="thinker-tag">Kapila</span>
+        </div>
+        <div class="card-concepts">Vedanta (Atman/Brahman) · Samkhya · Yoga · Nyaya (logic) · Vaisheshika · Mimamsa · Advaita (non-dualism)</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">600 BC – present</div>
+        <div class="card-icon">☯️</div>
+        <div class="card-name">Chinese Philosophy</div>
+        <div class="card-region">⟡ China — Hundred Schools of Thought Period</div>
+        <div class="card-desc">During the Warring States period, China's greatest philosophical explosion occurred. Confucianism focused on social harmony, Taoism on natural flow, Mohism on universal love, and Legalism on state control.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Confucius</span><span class="thinker-tag">Laozi</span><span class="thinker-tag">Zhuangzi</span><span class="thinker-tag">Mencius</span><span class="thinker-tag">Xunzi</span><span class="thinker-tag">Mozi</span>
+        </div>
+        <div class="card-concepts">Ren (benevolence) · Li (ritual propriety) · Tao (the Way) · Wu Wei · Yin-Yang · De (virtue) · Mandate of Heaven</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">500 BC – present</div>
+        <div class="card-icon">🪷</div>
+        <div class="card-name">Buddhist Philosophy</div>
+        <div class="card-region">⟡ India, Tibet, China, Japan, Southeast Asia</div>
+        <div class="card-desc">Beginning with Siddhartha Gautama's inquiry into suffering, Buddhist philosophy developed into extraordinary depth — examining the nature of the self, consciousness, causality, and the path to liberation from suffering.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Nagarjuna</span><span class="thinker-tag">Vasubandhu</span><span class="thinker-tag">Dignaga</span><span class="thinker-tag">Chandrakirti</span><span class="thinker-tag">Dogen</span>
+        </div>
+        <div class="card-concepts">Four Noble Truths · Dependent Origination · Anatman (no-self) · Sunyata (emptiness) · Middle Way · Madhyamaka · Yogacara</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">800 – 1400 AD</div>
+        <div class="card-icon">🌙</div>
+        <div class="card-name">Islamic Philosophy (Falsafa)</div>
+        <div class="card-region">⟡ Baghdad, Cordoba, Persia, Cairo</div>
+        <div class="card-desc">Islamic philosophers preserved and extended Greek thought during Europe's Dark Ages. They developed original insights in logic, metaphysics, medicine, and the relationship between reason and revelation.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Al-Kindi</span><span class="thinker-tag">Avicenna</span><span class="thinker-tag">Averroes</span><span class="thinker-tag">Al-Ghazali</span><span class="thinker-tag">Ibn Khaldun</span>
+        </div>
+        <div class="card-concepts">Necessary Being · Active Intellect · Occasionalism · Incoherence of Philosophers · Universal History · Wajib al-Wujud</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">200 BC – 600 AD</div>
+        <div class="card-icon">✡️</div>
+        <div class="card-name">Jewish Philosophy</div>
+        <div class="card-region">⟡ Alexandria, Babylon, Spain, Germany</div>
+        <div class="card-desc">Jewish thinkers engaged deeply with Greek philosophy, attempting to synthesize monotheism, revelation, and reason — while developing unique insights on creation, prophecy, and the divine attributes.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Philo of Alexandria</span><span class="thinker-tag">Maimonides</span><span class="thinker-tag">Saadia Gaon</span><span class="thinker-tag">Spinoza</span>
+        </div>
+        <div class="card-concepts">Negative Theology · Prophecy · Creation ex nihilo · Divine Providence · Via Negativa</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">600 BC – 400 BC</div>
+        <div class="card-icon">⚡</div>
+        <div class="card-name">Jain Philosophy</div>
+        <div class="card-region">⟡ Ancient India</div>
+        <div class="card-desc">One of the oldest philosophical traditions, Jainism developed sophisticated theories of multi-sided truth (Anekantavada), non-violence, and the nature of the soul — centuries before Western relativism.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Mahavira</span><span class="thinker-tag">Umasvati</span><span class="thinker-tag">Kundakunda</span><span class="thinker-tag">Hemachandra</span>
+        </div>
+        <div class="card-concepts">Anekantavada (many-sidedness) · Syadvada (conditional predication) · Ahimsa · Karma · Jiva/Ajiva · Non-absolutism</div>
+      </div>
+    </div>
+
+    <div id="tab-modern" class="tab-panel">
+      <div class="school-card">
+        <div class="card-era">1880 – present</div>
+        <div class="card-icon">🔬</div>
+        <div class="card-name">Analytic Philosophy</div>
+        <div class="card-region">⟡ Britain, Austria, USA</div>
+        <div class="card-desc">Emerging from Frege, Russell, and Wittgenstein, analytic philosophy focuses on rigorous logical analysis of language, meaning, and argument. It became dominant in Anglophone universities through the 20th century.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Frege</span><span class="thinker-tag">Russell</span><span class="thinker-tag">Wittgenstein</span><span class="thinker-tag">Moore</span><span class="thinker-tag">Quine</span><span class="thinker-tag">Kripke</span>
+        </div>
+        <div class="card-concepts">Logical Atomism · Vienna Circle · Language Games · Linguistic Turn · Possible Worlds · Speech Acts · Functionalism</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">1850 – present</div>
+        <div class="card-icon">🌑</div>
+        <div class="card-name">Existentialism</div>
+        <div class="card-region">⟡ Denmark, Germany, France</div>
+        <div class="card-desc">Existentialists confronted the radical freedom and responsibility of human existence — the anxiety of choosing without a given essence, the absurdity of a universe indifferent to our meaning-seeking.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Kierkegaard</span><span class="thinker-tag">Heidegger</span><span class="thinker-tag">Sartre</span><span class="thinker-tag">Camus</span><span class="thinker-tag">de Beauvoir</span><span class="thinker-tag">Merleau-Ponty</span>
+        </div>
+        <div class="card-concepts">Existence precedes essence · Bad faith · Dasein · Being-toward-death · The Absurd · Thrownness · Facticity</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">1900 – present</div>
+        <div class="card-icon">🌀</div>
+        <div class="card-name">Phenomenology</div>
+        <div class="card-region">⟡ Germany, France</div>
+        <div class="card-desc">Founded by Husserl, phenomenology returns to the structures of pure conscious experience — how things appear to us before any theoretical interpretation. Hugely influential in psychology, cognitive science, and the humanities.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Husserl</span><span class="thinker-tag">Heidegger</span><span class="thinker-tag">Merleau-Ponty</span><span class="thinker-tag">Levinas</span><span class="thinker-tag">Ricoeur</span>
+        </div>
+        <div class="card-concepts">Intentionality · Epoché · Lifeworld · Embodiment · Intersubjectivity · Temporality · Horizon</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">1930 – present</div>
+        <div class="card-icon">🎭</div>
+        <div class="card-name">Critical Theory / Frankfurt School</div>
+        <div class="card-region">⟡ Germany, USA</div>
+        <div class="card-desc">Combining Marx, Freud, and Hegel, Frankfurt theorists analyzed how modern society perpetuates domination — through culture, mass media, rationality itself. The intellectual foundation of modern social critique.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Adorno</span><span class="thinker-tag">Horkheimer</span><span class="thinker-tag">Marcuse</span><span class="thinker-tag">Habermas</span><span class="thinker-tag">Benjamin</span>
+        </div>
+        <div class="card-concepts">Dialectic of Enlightenment · Culture Industry · One-Dimensional Man · Communicative Action · Reification</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">1960 – present</div>
+        <div class="card-icon">🧩</div>
+        <div class="card-name">Poststructuralism / Postmodernism</div>
+        <div class="card-region">⟡ France, USA</div>
+        <div class="card-desc">Poststructuralists attacked the idea of stable meanings, unified subjects, and grand narratives. Meaning is always deferred; power relations permeate everything; knowledge is never neutral.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Derrida</span><span class="thinker-tag">Foucault</span><span class="thinker-tag">Deleuze</span><span class="thinker-tag">Lyotard</span><span class="thinker-tag">Baudrillard</span>
+        </div>
+        <div class="card-concepts">Deconstruction · Différance · Power/Knowledge · Simulacra · Rhizome · Death of the Author · Metanarrative</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">1870 – present</div>
+        <div class="card-icon">🔧</div>
+        <div class="card-name">Pragmatism</div>
+        <div class="card-region">⟡ United States</div>
+        <div class="card-desc">America's original philosophical tradition: truth is what works. Ideas are tools for problem-solving; philosophy should have practical consequences. Truth is not found but made, in the crucible of experience.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Peirce</span><span class="thinker-tag">William James</span><span class="thinker-tag">John Dewey</span><span class="thinker-tag">Rorty</span><span class="thinker-tag">Putnam</span>
+        </div>
+        <div class="card-concepts">Pragmatic Maxim · Cash Value of Truth · Fallibilism · Anti-representationalism · Instrumentalism · Inquiry</div>
+      </div>
+    </div>
+
+    <div id="tab-contemporary" class="tab-panel">
+      <div class="school-card">
+        <div class="card-era">1970 – present</div>
+        <div class="card-icon">🧠</div>
+        <div class="card-name">Philosophy of Mind</div>
+        <div class="card-region">⟡ Global — Interdisciplinary</div>
+        <div class="card-desc">The "hard problem of consciousness" — why does physical brain activity give rise to subjective experience? Physicalists, dualists, and panpsychists battle over the nature of mind, qualia, and intentionality.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Chalmers</span><span class="thinker-tag">Dennett</span><span class="thinker-tag">Nagel</span><span class="thinker-tag">Jackson</span><span class="thinker-tag">Searle</span>
+        </div>
+        <div class="card-concepts">Hard Problem · Qualia · Physicalism · Functionalism · Chinese Room · Mary's Room · Zombie Argument</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">1980 – present</div>
+        <div class="card-icon">👩</div>
+        <div class="card-name">Feminist Philosophy</div>
+        <div class="card-region">⟡ Global</div>
+        <div class="card-desc">Feminist philosophers examine how gender shapes knowledge, morality, and politics. They challenge the supposedly neutral view from nowhere that has excluded women's perspectives from the philosophical canon.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Simone de Beauvoir</span><span class="thinker-tag">Judith Butler</span><span class="thinker-tag">Martha Nussbaum</span><span class="thinker-tag">Patricia Hill Collins</span>
+        </div>
+        <div class="card-concepts">Standpoint Epistemology · Gender Performativity · Ethics of Care · Intersectionality · Embodiment · Situated Knowledge</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">1990 – present</div>
+        <div class="card-icon">🌐</div>
+        <div class="card-name">Philosophy of Technology / AI Ethics</div>
+        <div class="card-region">⟡ Global</div>
+        <div class="card-desc">As technology reshapes humanity, philosophers ask: what does it mean to be human in a technological world? What are our obligations toward AI? When does an AI deserve moral consideration?</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Nick Bostrom</span><span class="thinker-tag">Luciano Floridi</span><span class="thinker-tag">Sherry Turkle</span><span class="thinker-tag">Peter Singer</span>
+        </div>
+        <div class="card-concepts">Technological Singularity · Infosphere · Digital Ontology · Machine Consciousness · AI Alignment · Posthumanism</div>
+      </div>
+      <div class="school-card">
+        <div class="card-era">2000 – present</div>
+        <div class="card-icon">🌱</div>
+        <div class="card-name">Environmental Philosophy</div>
+        <div class="card-region">⟡ Global</div>
+        <div class="card-desc">As ecological crisis deepens, philosophers rethink humanity's relationship to nature — questioning anthropocentrism, developing ethical frameworks for non-human life, and re-examining our obligations to future generations.</div>
+        <div class="card-thinkers">
+          <span class="thinker-tag">Arne Næss</span><span class="thinker-tag">Holmes Rolston III</span><span class="thinker-tag">Val Plumwood</span><span class="thinker-tag">Dale Jamieson</span>
+        </div>
+        <div class="card-concepts">Deep Ecology · Intrinsic Value · Ecofeminism · Environmental Justice · Intergenerational Ethics · Anthropocene</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline-section">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">∴ 2,600 Years of Inquiry</div>
+      <h2 class="section-title">The Great Timeline</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="timeline reveal">
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">~ 624 BC</div>
+          <div class="t-name">Thales of Miletus</div>
+          <div class="t-text">The first philosopher. Declared water to be the fundamental substance of all things — the first recorded attempt to explain the world through natural causes rather than mythology.</div>
+          <div class="t-quote">"Water is the principle of all things."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">535 – 475 BC</div>
+          <div class="t-name">Heraclitus</div>
+          <div class="t-text">Declared everything is in constant flux. Reality is structured by the Logos — a rational principle of unity underlying apparent opposites. Fire is his central metaphor: constant change within constant order.</div>
+          <div class="t-quote">"No man ever steps in the same river twice."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">~ 563 BC</div>
+          <div class="t-name">Siddhartha Gautama (The Buddha)</div>
+          <div class="t-text">In India, Siddhartha diagnosed the root of human suffering as attachment and craving, and mapped the Eightfold Path to liberation. His philosophy of the mind and suffering remains among the most practically influential ever developed.</div>
+          <div class="t-quote">"The mind is everything. What you think, you become."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">551 – 479 BC</div>
+          <div class="t-name">Confucius (Kong Qiu)</div>
+          <div class="t-text">In China, Confucius built an ethical system centered on relationships, ritual propriety, and self-cultivation. His emphasis on social harmony and benevolence (Ren) shaped East Asian civilization for 2,500 years.</div>
+          <div class="t-quote">"It does not matter how slowly you go as long as you do not stop."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">470 – 399 BC</div>
+          <div class="t-name">Socrates</div>
+          <div class="t-text">The gadfly of Athens — the man who claimed to know only that he knew nothing. His Socratic method of relentless questioning exposed hidden assumptions and sought universal definitions of virtue, justice, and the good. Executed for impiety.</div>
+          <div class="t-quote">"The unexamined life is not worth living."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">428 – 348 BC</div>
+          <div class="t-name">Plato</div>
+          <div class="t-text">Plato's Theory of Forms posited that the physical world is a shadow of a higher reality of perfect, eternal Ideas. In the Republic, he designed the ideal state; in dialogues, he explored justice, love, beauty, and immortality.</div>
+          <div class="t-quote">"At the touch of love, everyone becomes a poet."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">384 – 322 BC</div>
+          <div class="t-name">Aristotle</div>
+          <div class="t-text">The master of those who know. Aristotle systematized logic, biology, politics, poetics, physics, and ethics. His Nicomachean Ethics defined virtue as a mean between extremes; his logic dominated Western reasoning for 2,000 years.</div>
+          <div class="t-quote">"We are what we repeatedly do. Excellence, then, is not an act, but a habit."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">341 – 270 BC</div>
+          <div class="t-name">Epicurus</div>
+          <div class="t-text">Pleasure — specifically peace of mind (ataraxia) and freedom from pain — is the highest good. Live simply, cultivate friendship, avoid political life. One of antiquity's most misunderstood philosophers.</div>
+          <div class="t-quote">"Death is nothing to us: when we are, death has not come, and when death has come, we are not."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">334 – 262 BC</div>
+          <div class="t-name">Zeno of Citium (Stoicism)</div>
+          <div class="t-text">Founded Stoicism in Athens, teaching on the painted porch (Stoa Poikile). Virtue is the only true good; externals are indifferent. Control only your own judgment and will. Perhaps the most influential philosophy for daily life ever conceived.</div>
+          <div class="t-quote">"We have two ears and one mouth, that we may listen the more and talk the less."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">788 – 820 AD</div>
+          <div class="t-name">Adi Shankaracharya</div>
+          <div class="t-text">The greatest systematizer of Advaita Vedanta — the philosophy that Atman (self) and Brahman (universal consciousness) are ultimately identical. Traversed India debating, reforming, and reviving Hindu philosophy.</div>
+          <div class="t-quote">"Brahma satyam jagan mithya jivo brahmaiva naparah." (Brahman is real, the world is illusion.)</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">980 – 1037 AD</div>
+          <div class="t-name">Avicenna (Ibn Sina)</div>
+          <div class="t-text">The Islamic world's greatest philosopher-physician. His "Flying Man" thought experiment — imagining a person created in mid-air, deprived of all sensation — argued for the immaterial, self-aware soul, anticipating Descartes by 600 years.</div>
+          <div class="t-quote">"The soul is a divine emanation — its home is not earth but the highest heaven."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">1225 – 1274 AD</div>
+          <div class="t-name">Thomas Aquinas</div>
+          <div class="t-text">The Angelic Doctor synthesized Aristotle with Christian theology. His Five Ways attempted rational proofs of God's existence; his natural law theory remains foundational in Catholic moral theology and jurisprudence.</div>
+          <div class="t-quote">"The things that we love tell us what we are."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">1596 – 1650 AD</div>
+          <div class="t-name">René Descartes</div>
+          <div class="t-text">Father of Modern Philosophy. Methodically doubting everything until reaching the one certainty — "I think, therefore I am." His mind-body dualism set the agenda for centuries of philosophical debate about the nature of the self.</div>
+          <div class="t-quote">"Cogito, ergo sum — I think, therefore I am."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">1724 – 1804 AD</div>
+          <div class="t-name">Immanuel Kant</div>
+          <div class="t-text">The Copernican Revolution of philosophy. Kant showed that the mind actively structures experience — space, time, and causality are forms of our intuition, not features of things in themselves. His Categorical Imperative remains the most rigorous formulation of secular ethics.</div>
+          <div class="t-quote">"Two things fill the mind with ever new and increasing admiration: the starry heavens above me, and the moral law within me."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">1844 – 1900 AD</div>
+          <div class="t-name">Friedrich Nietzsche</div>
+          <div class="t-text">God is dead — and we killed him. Nietzsche diagnosed nihilism as modernity's deepest crisis and proposed the revaluation of all values, the Will to Power, and the Übermensch as responses. One of the most read and most misunderstood thinkers ever.</div>
+          <div class="t-quote">"That which does not kill us makes us stronger."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">1889 – 1976 AD</div>
+          <div class="t-name">Martin Heidegger</div>
+          <div class="t-text">The most controversial philosopher of the 20th century asked: what does it mean to Be? In Being and Time he showed that Dasein (human existence) is fundamentally temporal, thrown into the world, and always already understanding Being — yet mostly fleeing toward inauthenticity.</div>
+          <div class="t-quote">"Every man is born as many men and dies as a single one."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">1905 – 1980 AD</div>
+          <div class="t-name">Jean-Paul Sartre</div>
+          <div class="t-text">Existence precedes essence — there is no God, no given human nature. We are condemned to be free. Radical freedom brings radical responsibility. Sartre's café philosophy brought existentialism to the masses across war-torn Europe.</div>
+          <div class="t-quote">"Existence precedes essence."</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <div class="t-content">
+          <div class="t-year">1926 – 1984 AD</div>
+          <div class="t-name">Michel Foucault</div>
+          <div class="t-text">Mapped the hidden power structures in knowledge, institutions, and discourse. Showed how hospitals, prisons, schools, and clinics are technologies for producing docile bodies. Transformed history, sociology, and the humanities.</div>
+          <div class="t-quote">"Knowledge is not for knowing: knowledge is for cutting."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KEY THINKERS -->
+<section id="thinkers" style="background:linear-gradient(to bottom,transparent,rgba(10,8,6,.6),transparent)">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">∴ The Canon</div>
+      <h2 class="section-title">50 Essential Thinkers</h2>
+      <div class="section-rule"></div>
+      <p class="section-desc">From ancient shores to modern seminar rooms — the minds that changed everything.</p>
+    </div>
+    <div class="phil-grid reveal" id="phil-grid"></div>
+  </div>
+</section>
+
+<!-- BOOKS SECTION -->
+<section id="books">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">∴ The Essential Library</div>
+      <h2 class="section-title">Books to Read — Beginning to End</h2>
+      <div class="section-rule"></div>
+      <p class="section-desc">The complete reading list — from first questions to the frontier. Curated by tradition, difficulty, and essential importance.</p>
+    </div>
+
+    <div class="tab-nav reveal">
+      <button class="tab-btn active" onclick="switchBookTab('start')">Start Here</button>
+      <button class="tab-btn" onclick="switchBookTab('ancient')">Ancient</button>
+      <button class="tab-btn" onclick="switchBookTab('eastern-b')">Eastern</button>
+      <button class="tab-btn" onclick="switchBookTab('modern-b')">Modern</button>
+      <button class="tab-btn" onclick="switchBookTab('contemporary-b')">Contemporary</button>
+      <button class="tab-btn" onclick="switchBookTab('advanced')">Advanced</button>
+    </div>
+
+    <div id="btab-start" class="tab-panel active">
+      <div class="book-card"><span class="book-level beginner">Start Here</span><div class="book-title">Sophie's World</div><div class="book-author">Jostein Gaarder · 1991</div><div class="book-why">A teenage girl discovers a philosophy correspondence course in her mailbox. The entire history of Western philosophy, told as an enchanting novel. The perfect first book — engaging, complete, and surprisingly deep.</div><div class="book-branch">History of Philosophy · Survey</div></div>
+      <div class="book-card"><span class="book-level beginner">Start Here</span><div class="book-title">The Story of Philosophy</div><div class="book-author">Will Durant · 1926</div><div class="book-why">Durant's masterpiece surveys the great philosophers through beautifully written biography and thought. Reads like a novel about ideas. Every library should have this.</div><div class="book-branch">History of Philosophy · Biography</div></div>
+      <div class="book-card"><span class="book-level beginner">Start Here</span><div class="book-title">Philosophy: The Basics</div><div class="book-author">Nigel Warburton · 1992</div><div class="book-why">Crisp, clear introductions to the core questions — God, mind, body, knowledge, ethics, politics. Perfect for anyone who wants a map before diving deep.</div><div class="book-branch">Introduction · All Branches</div></div>
+      <div class="book-card"><span class="book-level beginner">Start Here</span><div class="book-title">Think: A Compelling Introduction to Philosophy</div><div class="book-author">Simon Blackburn · 1999</div><div class="book-why">Oxford philosopher Blackburn invites you to think with clarity and rigor about knowledge, mind, free will, self, God, goodness, and justice. Exceptionally well-written.</div><div class="book-branch">Introduction · Core Questions</div></div>
+      <div class="book-card"><span class="book-level beginner">Start Here</span><div class="book-title">The Problems of Philosophy</div><div class="book-author">Bertrand Russell · 1912</div><div class="book-why">Russell's brief, elegant introduction is still the best single-sitting entry into epistemology and metaphysics. Written for intelligent general readers. You can finish it in an afternoon.</div><div class="book-branch">Epistemology · Metaphysics</div></div>
+      <div class="book-card"><span class="book-level beginner">Start Here</span><div class="book-title">What Does It All Mean?</div><div class="book-author">Thomas Nagel · 1987</div><div class="book-why">Nine core philosophical puzzles explored with rare clarity by one of America's greatest living philosophers. Minimal jargon. Maximum depth. Perfect for beginners.</div><div class="book-branch">Introduction · Core Questions</div></div>
+    </div>
+
+    <div id="btab-ancient" class="tab-panel">
+      <div class="book-card"><span class="book-level essential">Essential</span><div class="book-title">The Republic</div><div class="book-author">Plato · ~375 BC</div><div class="book-why">Plato's masterwork on justice, the ideal state, the Theory of Forms, and the immortality of the soul. The Allegory of the Cave is here. One of the most influential books ever written.</div><div class="book-branch">Political Philosophy · Metaphysics · Ethics</div></div>
+      <div class="book-card"><span class="book-level essential">Essential</span><div class="book-title">Nicomachean Ethics</div><div class="book-author">Aristotle · ~350 BC</div><div class="book-why">Aristotle's inquiry into what makes a good human life. The concept of eudaimonia (flourishing), virtue as a mean, the role of friendship. The foundation of Western virtue ethics. Every sentence rewards slow reading.</div><div class="book-branch">Ethics · Virtue · Human Nature</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">Five Dialogues (Euthyphro, Apology, Crito, Meno, Phaedo)</div><div class="book-author">Plato · 399–380 BC</div><div class="book-why">The dramatic story of Socrates' trial and death, alongside inquiries into piety, virtue, knowledge, and the soul's immortality. The most accessible entry into Plato.</div><div class="book-branch">Ethics · Epistemology · Soul</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">Meditations</div><div class="book-author">Marcus Aurelius · 170–180 AD</div><div class="book-why">The private Stoic journal of a Roman emperor. Practical wisdom, daily reminders of virtue, mortality, and duty. The most widely read piece of ancient philosophy for a reason — it actually helps.</div><div class="book-branch">Stoicism · Ethics · Self-Mastery</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">Letters from a Stoic</div><div class="book-author">Seneca · ~65 AD</div><div class="book-why">Seneca's letters to Lucilius cover time, friendship, death, anger, wealth, and retirement. Perhaps the most readable of all ancient philosophers. Start with Letter I on time.</div><div class="book-branch">Stoicism · Ethics · Life</div></div>
+      <div class="book-card"><span class="book-level advanced">Advanced</span><div class="book-title">Metaphysics</div><div class="book-author">Aristotle · ~350 BC</div><div class="book-why">Aristotle's investigation of being qua being — substance, form, matter, potentiality and actuality. Dense but foundational for all subsequent Western metaphysics.</div><div class="book-branch">Metaphysics · Ontology</div></div>
+    </div>
+
+    <div id="btab-eastern-b" class="tab-panel">
+      <div class="book-card"><span class="book-level essential">Essential</span><div class="book-title">Tao Te Ching</div><div class="book-author">Laozi · ~400 BC</div><div class="book-why">81 short poems on the nature of the Tao (Way), non-action, simplicity, and the paradoxes of power. One of the most translated books in history. Every line contains a lifetime of contemplation.</div><div class="book-branch">Taoism · Ethics · Metaphysics</div></div>
+      <div class="book-card"><span class="book-level essential">Essential</span><div class="book-title">The Bhagavad Gita</div><div class="book-author">Vyasa · ~200 BC</div><div class="book-why">On the eve of battle, the warrior Arjuna is paralyzed by doubt. Krishna's teaching covers duty (dharma), the nature of the self, karma, devotion, and liberation. A complete philosophy of life in 700 verses.</div><div class="book-branch">Hindu Philosophy · Ethics · Metaphysics</div></div>
+      <div class="book-card"><span class="book-level essential">Essential</span><div class="book-title">The Analects</div><div class="book-author">Confucius · ~500 BC</div><div class="book-why">Confucius' collected sayings on virtue, family, government, and self-cultivation. Brief and aphoristic, but the foundation of Chinese civilization. Read slowly; nearly every entry is a complete philosophy.</div><div class="book-branch">Confucianism · Ethics · Politics</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">Zhuangzi (Complete Works)</div><div class="book-author">Zhuangzi · ~300 BC</div><div class="book-why">Wild stories, paradoxes, and parables about the impossibility of certain knowledge and the freedom of the Tao. The butterfly dream is here. One of the most beautiful books in philosophical literature.</div><div class="book-branch">Taoism · Epistemology · Liberation</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">In the Buddha's Words</div><div class="book-author">Bhikkhu Bodhi (trans.) · 2005</div><div class="book-why">An anthology of the Buddha's actual teachings from the Pali Canon — on suffering, not-self, dependent origination, and the path. The best single-volume introduction to original Buddhist thought.</div><div class="book-branch">Buddhism · Ethics · Psychology</div></div>
+      <div class="book-card"><span class="book-level advanced">Advanced</span><div class="book-title">The Fundamental Wisdom of the Middle Way (Mulamadhyamakakarika)</div><div class="book-author">Nagarjuna · ~150 AD</div><div class="book-why">Nagarjuna's radical deconstruction of all fixed concepts through emptiness (sunyata). One of the most rigorous works of philosophy ever written — nothing, not even emptiness, escapes critique.</div><div class="book-branch">Buddhist Philosophy · Logic · Metaphysics</div></div>
+    </div>
+
+    <div id="btab-modern-b" class="tab-panel">
+      <div class="book-card"><span class="book-level essential">Essential</span><div class="book-title">Meditations on First Philosophy</div><div class="book-author">René Descartes · 1641</div><div class="book-why">Six meditations that founded modern philosophy. Descartes systematically doubts everything until arriving at the cogito. Introduces the mind-body problem that still occupies philosophers today.</div><div class="book-branch">Epistemology · Metaphysics · Mind</div></div>
+      <div class="book-card"><span class="book-level essential">Essential</span><div class="book-title">Critique of Pure Reason</div><div class="book-author">Immanuel Kant · 1781</div><div class="book-why">The most important philosophical work of the last 400 years. Kant asks what the mind contributes to knowledge. Dense and difficult, but every page repays effort. Read the Prolegomena first as preparation.</div><div class="book-branch">Epistemology · Metaphysics</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">An Enquiry Concerning Human Understanding</div><div class="book-author">David Hume · 1748</div><div class="book-why">Hume's accessible masterwork on causation, induction, miracles, and the limits of reason. The shorter version of his Treatise. "Woke Kant from his dogmatic slumbers."</div><div class="book-branch">Epistemology · Empiricism</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">Beyond Good and Evil</div><div class="book-author">Friedrich Nietzsche · 1886</div><div class="book-why">Nietzsche's critique of all previous philosophers as unconscious advocates of their own prejudices. Master and slave morality. The Will to Power. Perspectivism. A harder but more systematic Nietzsche.</div><div class="book-branch">Ethics · Metaphysics · Critique</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">Either/Or</div><div class="book-author">Søren Kierkegaard · 1843</div><div class="book-why">Kierkegaard's exploration of the aesthetic and ethical stages of life. Part literature, part philosophy, entirely brilliant. The seducer's diary alone is worth the price of admission.</div><div class="book-branch">Existentialism · Ethics · Self</div></div>
+      <div class="book-card"><span class="book-level advanced">Advanced</span><div class="book-title">Phenomenology of Spirit</div><div class="book-author">G.W.F. Hegel · 1807</div><div class="book-why">Perhaps the most difficult major work in philosophy — Hegel traces the development of consciousness to Absolute Spirit through dialectical logic. Challenging but transformative. Master-Slave dialectic is here.</div><div class="book-branch">Idealism · History · Consciousness</div></div>
+    </div>
+
+    <div id="btab-contemporary-b" class="tab-panel">
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">Being and Nothingness</div><div class="book-author">Jean-Paul Sartre · 1943</div><div class="book-why">Sartre's magnum opus on freedom, consciousness, bad faith, and the other. Dense but rewarding. The section on the gaze is one of philosophy's most original insights.</div><div class="book-branch">Existentialism · Phenomenology · Ethics</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">The Second Sex</div><div class="book-author">Simone de Beauvoir · 1949</div><div class="book-why">"One is not born, but rather becomes, a woman." De Beauvoir applied existentialism to gender — a foundational text of feminism and one of the most important books of the 20th century.</div><div class="book-branch">Feminist Philosophy · Existentialism · Ethics</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">A Theory of Justice</div><div class="book-author">John Rawls · 1971</div><div class="book-why">The most important work of political philosophy since Kant. Behind the veil of ignorance, what principles of justice would rational persons choose? Rawls' thought experiment restructured liberal political thought.</div><div class="book-branch">Political Philosophy · Justice · Ethics</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">The Myth of Sisyphus</div><div class="book-author">Albert Camus · 1942</div><div class="book-why">Why not commit suicide? Camus confronts the absurd — the collision between our desire for meaning and the universe's silence. His conclusion: revolt, freedom, and passion. One must imagine Sisyphus happy.</div><div class="book-branch">Existentialism · Ethics · Meaning</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">Discipline and Punish</div><div class="book-author">Michel Foucault · 1975</div><div class="book-why">How did the prison become the model for modern society? Foucault traces how surveillance and normalization replaced public torture. The Panopticon chapter is essential reading for understanding modernity.</div><div class="book-branch">Political Philosophy · Power · History</div></div>
+      <div class="book-card"><span class="book-level intermediate">Intermediate</span><div class="book-title">The Conscious Mind</div><div class="book-author">David Chalmers · 1996</div><div class="book-why">Named and defined the "hard problem of consciousness." Why does physical processing feel like something? Chalmers argues dualism is unavoidable. The most important philosophy of mind work in decades.</div><div class="book-branch">Philosophy of Mind · Consciousness</div></div>
+    </div>
+
+    <div id="btab-advanced" class="tab-panel">
+      <div class="book-card"><span class="book-level advanced">Advanced</span><div class="book-title">Being and Time</div><div class="book-author">Martin Heidegger · 1927</div><div class="book-why">The most profound (and difficult) 20th-century work. Heidegger analyzes the structure of human existence: thrownness, care, anxiety, death, authenticity, temporality. Changes how you understand everything.</div><div class="book-branch">Phenomenology · Existentialism · Ontology</div></div>
+      <div class="book-card"><span class="book-level advanced">Advanced</span><div class="book-title">Philosophical Investigations</div><div class="book-author">Ludwig Wittgenstein · 1953</div><div class="book-why">The second revolution of Wittgenstein's thought — language as a form of life. The private language argument, family resemblance, language games. Perhaps the most influential book in 20th-century analytic philosophy.</div><div class="book-branch">Philosophy of Language · Analytic</div></div>
+      <div class="book-card"><span class="book-level advanced">Advanced</span><div class="book-title">Ethics (Ethica Ordine Geometrico Demonstrata)</div><div class="book-author">Baruch Spinoza · 1677</div><div class="book-why">Philosophy written like Euclidean geometry — definitions, axioms, propositions, proofs. God and Nature are identical (Deus sive Natura). Human freedom lies in understanding our place in the causal order. Breathtaking architecture of thought.</div><div class="book-branch">Metaphysics · Ethics · God</div></div>
+      <div class="book-card"><span class="book-level advanced">Advanced</span><div class="book-title">Of Grammatology</div><div class="book-author">Jacques Derrida · 1967</div><div class="book-why">Derrida's founding work of deconstruction — the critique of logocentrism, the phonocentrism of Western thought, and the trace structure of meaning. Demanding but the foundation of poststructuralist thought.</div><div class="book-branch">Poststructuralism · Language · Deconstruction</div></div>
+      <div class="book-card"><span class="book-level advanced">Advanced</span><div class="book-title">The Structure of Scientific Revolutions</div><div class="book-author">Thomas Kuhn · 1962</div><div class="book-why">Science doesn't progress linearly — it lurches through paradigm shifts. Introduced the concept of "paradigm" to our culture. Transformed philosophy of science and the sociology of knowledge.</div><div class="book-branch">Philosophy of Science · Epistemology</div></div>
+      <div class="book-card"><span class="book-level advanced">Advanced</span><div class="book-title">Anti-Oedipus</div><div class="book-author">Deleuze & Guattari · 1972</div><div class="book-why">A libidinal materialism — desire is productive, not lacking. A critique of Freudian and Marxist reductions. The rhizome as model of thought. Wild, difficult, transformative.</div><div class="book-branch">Poststructuralism · Psychoanalysis · Politics</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- READING PATH -->
+<section id="path" style="background:linear-gradient(to bottom,transparent,rgba(201,168,76,.02),transparent)">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">∴ Your Journey</div>
+      <h2 class="section-title">The Complete Reading Path</h2>
+      <div class="section-rule"></div>
+      <p class="section-desc">From absolute beginner to genuine philosophical depth — a structured journey through the entire tradition.</p>
+    </div>
+    <div class="path-wrap reveal">
+      <div class="path-step">
+        <div class="path-num">01</div>
+        <div>
+          <div class="path-phase">Phase I — 1–3 Months</div>
+          <div class="path-title">The First Questions</div>
+          <div class="path-desc">Before reading the great texts, understand what philosophy is and why it matters. Build orientation — a map of the terrain. These books introduce philosophy painlessly and give you the essential vocabulary.</div>
+          <div class="path-books">
+            <span class="path-book-tag">Sophie's World</span>
+            <span class="path-book-tag">The Problems of Philosophy</span>
+            <span class="path-book-tag">What Does It All Mean?</span>
+            <span class="path-book-tag">Meditations — Marcus Aurelius</span>
+          </div>
+        </div>
+      </div>
+      <div class="path-step">
+        <div class="path-num">02</div>
+        <div>
+          <div class="path-phase">Phase II — 3–9 Months</div>
+          <div class="path-title">The Ancient Foundations</div>
+          <div class="path-desc">Western philosophy is "footnotes to Plato" (Whitehead). Eastern thought reaches equally deep. Spend real time here — these texts shaped civilization. Slow reading, return to them often.</div>
+          <div class="path-books">
+            <span class="path-book-tag">Plato's Five Dialogues</span>
+            <span class="path-book-tag">Nicomachean Ethics</span>
+            <span class="path-book-tag">Tao Te Ching</span>
+            <span class="path-book-tag">The Analects</span>
+            <span class="path-book-tag">The Bhagavad Gita</span>
+            <span class="path-book-tag">Letters from a Stoic</span>
+          </div>
+        </div>
+      </div>
+      <div class="path-step">
+        <div class="path-num">03</div>
+        <div>
+          <div class="path-phase">Phase III — 9–18 Months</div>
+          <div class="path-title">The Modern Turn</div>
+          <div class="path-desc">Descartes, Hume, and Kant define the modern philosophical project. These thinkers defined how we still think about knowledge, mind, morality, and politics. Kant especially requires patience — but changes everything.</div>
+          <div class="path-books">
+            <span class="path-book-tag">Meditations — Descartes</span>
+            <span class="path-book-tag">Enquiry — Hume</span>
+            <span class="path-book-tag">Groundwork of Morals — Kant</span>
+            <span class="path-book-tag">Beyond Good and Evil</span>
+            <span class="path-book-tag">Either/Or — Kierkegaard</span>
+          </div>
+        </div>
+      </div>
+      <div class="path-step">
+        <div class="path-num">04</div>
+        <div>
+          <div class="path-phase">Phase IV — 18–30 Months</div>
+          <div class="path-title">Existentialism & Continental Thought</div>
+          <div class="path-desc">The 20th century's most dramatic philosophy — the encounter with meaninglessness, freedom, the other, and power. Sartre, Camus, Foucault, de Beauvoir. These thinkers respond to actual historical catastrophe.</div>
+          <div class="path-books">
+            <span class="path-book-tag">Myth of Sisyphus</span>
+            <span class="path-book-tag">Being and Nothingness</span>
+            <span class="path-book-tag">The Second Sex</span>
+            <span class="path-book-tag">Discipline and Punish</span>
+            <span class="path-book-tag">A Theory of Justice</span>
+          </div>
+        </div>
+      </div>
+      <div class="path-step">
+        <div class="path-num">05</div>
+        <div>
+          <div class="path-phase">Phase V — 30–48 Months</div>
+          <div class="path-title">Depth: The Difficult Texts</div>
+          <div class="path-desc">Now you have the preparation to tackle the most demanding works. Being and Time, the Critique of Pure Reason, the Phenomenology of Spirit. These books take months each. They reward that time with genuine transformation.</div>
+          <div class="path-books">
+            <span class="path-book-tag">Critique of Pure Reason</span>
+            <span class="path-book-tag">Being and Time</span>
+            <span class="path-book-tag">Philosophical Investigations</span>
+            <span class="path-book-tag">Phenomenology of Spirit</span>
+            <span class="path-book-tag">Ethics — Spinoza</span>
+          </div>
+        </div>
+      </div>
+      <div class="path-step">
+        <div class="path-num">06</div>
+        <div>
+          <div class="path-phase">Phase VI — Ongoing</div>
+          <div class="path-title">The Living Frontier</div>
+          <div class="path-desc">Philosophy never ends — it is always current. The hard problem of consciousness, AI ethics, environmental philosophy, global justice, philosophy of race. The questions that matter most are still open. Now you are equipped to engage them.</div>
+          <div class="path-books">
+            <span class="path-book-tag">The Conscious Mind</span>
+            <span class="path-book-tag">Nagarjuna's Madhyamaka</span>
+            <span class="path-book-tag">Gender Trouble — Butler</span>
+            <span class="path-book-tag">Of Grammatology</span>
+            <span class="path-book-tag">Structure of Sci. Revolutions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">PHILOSOPHIA</div>
+  <div class="footer-motto">"The owl of Minerva spreads its wings only with the falling of the dusk." — Hegel</div>
+  <div class="footer-links">
+    <a href="#hero">Begin</a>
+    <a href="#schools">Schools</a>
+    <a href="#thinkers">Thinkers</a>
+    <a href="#books">Books</a>
+    <a href="#path">Path</a>
+  </div>
+  <div class="footer-copy">PHILOSOPHIA — THE COMPLETE UNIVERSE OF THOUGHT — BUILT FOR THE LOVE OF WISDOM</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-sub" id="modal-sub"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ── PHILOSOPHER DATA ──────────────────────────────────────────
+const philosophers = [
+  {name:"Thales",life:"624–546 BC",origin:"Miletus, Greece",school:"Pre-Socratic",desc:"First philosopher; posited water as the fundamental substance of all reality.",quote:"\"Water is the principle of all things.\"",key:"Arche, Naturalism"},
+  {name:"Heraclitus",life:"535–475 BC",origin:"Ephesus, Greece",school:"Pre-Socratic",desc:"Reality is constant flux governed by Logos; opposites are unified in tension.",quote:"\"No man steps in the same river twice.\"",key:"Logos, Flux, Fire"},
+  {name:"Parmenides",life:"515–450 BC",origin:"Elea, Greece",school:"Pre-Socratic",desc:"Being is one, eternal, unchanging. Change is an illusion of the senses.",quote:"\"What is, is. What is not, is not.\"",key:"Being, Monism, Logic"},
+  {name:"Socrates",life:"470–399 BC",origin:"Athens, Greece",school:"Classical Greek",desc:"Father of Western ethics. Claimed knowledge only of ignorance. Developed the dialectical method of inquiry through questioning.",quote:"\"The unexamined life is not worth living.\"",key:"Dialectic, Virtue, Elenchus"},
+  {name:"Plato",life:"428–348 BC",origin:"Athens, Greece",school:"Classical Greek",desc:"Theory of Forms: eternal, perfect archetypes beyond the physical world. Founded the Academy; wrote in dramatic dialogues.",quote:"\"Reality is created by the mind.\"",key:"Forms, Allegory of Cave, Demiurge"},
+  {name:"Aristotle",life:"384–322 BC",origin:"Stagira, Greece",school:"Classical Greek",desc:"Student of Plato who rejected the Theory of Forms. Systematized logic, science, ethics, politics, and aesthetics.",quote:"\"We are what we repeatedly do.\"",key:"Four Causes, Virtue, Logic, Eudaimonia"},
+  {name:"Epicurus",life:"341–270 BC",origin:"Samos / Athens",school:"Epicureanism",desc:"The highest good is pleasure, understood as peace of mind and freedom from pain (ataraxia). Advocated simple living and friendship.",quote:"\"Death is nothing to us.\"",key:"Ataraxia, Pleasure, Atomism"},
+  {name:"Zeno of Citium",life:"334–262 BC",origin:"Citium, Cyprus",school:"Stoicism",desc:"Founded Stoicism. Virtue alone is good; externals are indifferent. Live according to nature and reason.",quote:"\"Man conquers the world by conquering himself.\"",key:"Virtue, Reason, Indifferents"},
+  {name:"Nagarjuna",life:"~150 AD",origin:"South India",school:"Madhyamaka Buddhism",desc:"Founder of Madhyamaka school. Demonstrated that all phenomena are empty of inherent existence through rigorous dialectical logic.",quote:"\"All things are empty of self-nature.\"",key:"Sunyata, Madhyamaka, Two Truths"},
+  {name:"Plotinus",life:"204–270 AD",origin:"Egypt / Rome",school:"Neo-Platonism",desc:"Founded Neo-Platonism. The universe emanates from the One through Nous (intellect) and Soul. Mystical union with the One is possible.",quote:"\"The soul leaves all other things aside.\"",key:"The One, Emanation, Mysticism"},
+  {name:"Augustine",life:"354–430 AD",origin:"Numidia, Africa",school:"Medieval / Christian",desc:"Synthesized Platonic philosophy with Christian theology. On time, evil, free will, and grace. Confessions is the first great autobiography.",quote:"\"Our heart is restless until it rests in Thee.\"",key:"Original Sin, Grace, Time, Evil"},
+  {name:"Avicenna (Ibn Sina)",life:"980–1037 AD",origin:"Persia (Iran)",school:"Islamic Philosophy",desc:"Greatest philosopher-physician of Islam. The Flying Man argument for soul; Necessary Being; systematized Aristotle for Islamic thought.",quote:"\"The knowledge of anything... is not complete unless known by its causes.\"",key:"Necessary Being, Flying Man, Active Intellect"},
+  {name:"Averroes (Ibn Rushd)",life:"1126–1198 AD",origin:"Cordoba, Spain",school:"Islamic Philosophy",desc:"'The Commentator' on Aristotle. Defended rational inquiry against Al-Ghazali. His works triggered the European recovery of Aristotle.",quote:"\"Ignorance leads to fear, fear leads to hatred.\"",key:"Commentaries on Aristotle, Double Truth"},
+  {name:"Thomas Aquinas",life:"1225–1274 AD",origin:"Aquino, Italy",school:"Scholasticism",desc:"Synthesized Aristotle and Christian theology. Five Ways for God's existence. Natural law. The summit of Medieval philosophy.",quote:"\"The things that we love tell us what we are.\"",key:"Five Ways, Natural Law, Hylomorphism"},
+  {name:"Adi Shankaracharya",life:"788–820 AD",origin:"Kerala, India",school:"Advaita Vedanta",desc:"Systematized Advaita Vedanta: Brahman alone is real; the world is maya (illusion); Atman is identical with Brahman.",quote:"\"Brahman is real, the world is illusion.\"",key:"Advaita, Maya, Atman=Brahman"},
+  {name:"René Descartes",life:"1596–1650",origin:"La Haye, France",school:"Rationalism",desc:"Father of modern philosophy. Systematic doubt led to the cogito. Mind-body dualism. Founded analytical geometry.",quote:"\"Cogito, ergo sum.\"",key:"Cogito, Doubt, Mind-Body Dualism"},
+  {name:"Baruch Spinoza",life:"1632–1677",origin:"Amsterdam, Netherlands",school:"Rationalism",desc:"God and Nature are identical (Deus sive Natura). Substance monism. Ethics written geometrically. Excommunicated for his radical ideas.",quote:"\"God is the indwelling and not the transient cause of all things.\"",key:"Monism, Deus sive Natura, Conatus"},
+  {name:"Gottfried Leibniz",life:"1646–1716",origin:"Leipzig, Germany",school:"Rationalism",desc:"Monads as fundamental reality; pre-established harmony; this is the best of all possible worlds. Co-invented calculus independently.",quote:"\"Music is the hidden arithmetic of the soul.\"",key:"Monads, Pre-established Harmony, Theodicy"},
+  {name:"John Locke",life:"1632–1704",origin:"Somerset, England",school:"Empiricism",desc:"Mind is a blank slate (tabula rasa). Knowledge comes from experience. Natural rights (life, liberty, property). Father of liberalism.",quote:"\"The mind is a blank page.\"",key:"Tabula Rasa, Natural Rights, Empiricism"},
+  {name:"David Hume",life:"1711–1776",origin:"Edinburgh, Scotland",school:"Empiricism",desc:"Causation is habit of mind, not necessity. Skepticism about induction, the self, and God. 'Woke Kant from his dogmatic slumbers.'",quote:"\"Reason is the slave of the passions.\"",key:"Causation, Bundle Theory of Self, Is-Ought"},
+  {name:"Immanuel Kant",life:"1724–1804",origin:"Königsberg, Prussia",school:"German Idealism",desc:"Copernican Revolution: mind structures experience. Categorical Imperative. Transcendental idealism. The conditions for the possibility of experience.",quote:"\"Two things fill the mind with awe: the starry heavens above, the moral law within.\"",key:"Categorical Imperative, Transcendental Idealism, Noumena"},
+  {name:"G.W.F. Hegel",life:"1770–1831",origin:"Stuttgart, Germany",school:"German Idealism",desc:"History is the development of Absolute Spirit through dialectical contradiction. Master-Slave dialectic. Influenced Marx, Existentialism, and Critical Theory.",quote:"\"The owl of Minerva spreads its wings only with the falling of dusk.\"",key:"Dialectic, Absolute Spirit, History"},
+  {name:"Arthur Schopenhauer",life:"1788–1860",origin:"Danzig, Germany",school:"Voluntarism",desc:"Will to live is the blind, suffering force behind all reality. Influenced Nietzsche and Eastern thought. Pessimism as philosophy.",quote:"\"Life swings like a pendulum between pain and boredom.\"",key:"Will, Pessimism, Art as Salvation"},
+  {name:"Karl Marx",life:"1818–1883",origin:"Trier, Germany",school:"Historical Materialism",desc:"Inverted Hegel: history is driven by material conditions and class struggle, not ideas. Capital, alienation, and the revolutionary potential of the proletariat.",quote:"\"The philosophers have only interpreted the world; the point is to change it.\"",key:"Alienation, Historical Materialism, Class Struggle"},
+  {name:"Søren Kierkegaard",life:"1813–1855",origin:"Copenhagen, Denmark",school:"Existentialism",desc:"Father of existentialism. Three stages of existence: aesthetic, ethical, religious. Subjectivity is truth. Leap of faith.",quote:"\"Life can only be understood backwards; but it must be lived forwards.\"",key:"Stages of Existence, Leap of Faith, Anxiety"},
+  {name:"Friedrich Nietzsche",life:"1844–1900",origin:"Röcken, Germany",school:"Existentialism / Nihilism",desc:"God is dead; nihilism is modernity's crisis. Will to Power; Eternal Recurrence; the Übermensch. Revaluation of all values.",quote:"\"That which does not kill us makes us stronger.\"",key:"Will to Power, Übermensch, Eternal Recurrence"},
+  {name:"William James",life:"1842–1910",origin:"New York, USA",school:"Pragmatism",desc:"Co-founder of pragmatism. Truth is what works. Radical empiricism. The varieties of religious experience. Founded American psychology.",quote:"\"Act as if what you do makes a difference. It does.\"",key:"Pragmatism, Radical Empiricism, Streams of Consciousness"},
+  {name:"Edmund Husserl",life:"1859–1938",origin:"Prostějov, Moravia",school:"Phenomenology",desc:"Founded phenomenology. Bracketing (epoché) the natural attitude to study pure structures of conscious experience. Intentionality is consciousness's essence.",quote:"\"Back to the things themselves.\"",key:"Intentionality, Epoché, Lifeworld"},
+  {name:"Bertrand Russell",life:"1872–1970",origin:"Trellech, Wales",school:"Analytic Philosophy",desc:"Co-founded analytic philosophy and modern logic with Frege and Whitehead. Logical atomism. Nobel Prize for Literature. Lifelong pacifist.",quote:"\"The good life is one inspired by love and guided by knowledge.\"",key:"Logical Atomism, Theory of Descriptions, Logical Empiricism"},
+  {name:"Ludwig Wittgenstein",life:"1889–1951",origin:"Vienna, Austria",school:"Analytic Philosophy",desc:"Two revolutionary phases: Tractatus (language as picture of facts) and Investigations (language as tool; meaning as use). Most influential analytic philosopher.",quote:"\"Whereof one cannot speak, thereof one must be silent.\"",key:"Language Games, Picture Theory, Family Resemblance"},
+  {name:"Martin Heidegger",life:"1889–1976",origin:"Meßkirch, Germany",school:"Phenomenology / Existentialism",desc:"Dasein, Being-in-the-world, throwness, anxiety, authenticity, Being-toward-death. Asked: what is the meaning of Being itself? Most profound and most controversial 20th-c philosopher.",quote:"\"Language is the house of Being.\"",key:"Dasein, Being-toward-death, Thrownness, Aletheia"},
+  {name:"Walter Benjamin",life:"1892–1940",origin:"Berlin, Germany",school:"Critical Theory",desc:"The artwork in the age of mechanical reproduction. Flâneur. Historical materialism meets theology. Arcades Project. Died fleeing the Nazis.",quote:"\"Every document of civilization is at the same time a document of barbarism.\"",key:"Aura, Arcades Project, Angel of History"},
+  {name:"Jean-Paul Sartre",life:"1905–1980",origin:"Paris, France",school:"Existentialism",desc:"Existence precedes essence. Bad faith. Radical freedom and responsibility. Refused the Nobel Prize. Led postwar intellectual culture in Paris.",quote:"\"Existence precedes essence.\"",key:"Bad Faith, Freedom, Being-for-itself"},
+  {name:"Simone de Beauvoir",life:"1908–1986",origin:"Paris, France",school:"Existential Feminism",desc:"Applied existentialism to gender oppression. 'One is not born, but rather becomes, a woman.' Founded modern feminist philosophy.",quote:"\"One is not born, but rather becomes, a woman.\"",key:"The Other, Situated Freedom, Feminism"},
+  {name:"Albert Camus",life:"1913–1960",origin:"Algeria / France",school:"Absurdism",desc:"The Absurd is the conflict between human need for meaning and the universe's silence. Revolt, freedom, passion. Nobel Prize 1957.",quote:"\"One must imagine Sisyphus happy.\"",key:"Absurd, Revolt, Solidarity"},
+  {name:"Michel Foucault",life:"1926–1984",origin:"Poitiers, France",school:"Post-Structuralism",desc:"Genealogy of power-knowledge. How institutions (prison, clinic, asylum) produce subjects. Biopower. Unmade the human sciences.",quote:"\"Knowledge is not for knowing: knowledge is for cutting.\"",key:"Power/Knowledge, Genealogy, Biopolitics"},
+  {name:"Jacques Derrida",life:"1930–2004",origin:"El-Biar, Algeria",school:"Deconstruction",desc:"Deconstruction: every text undermines its own assumptions. Différance. The trace. Logocentrism. Most discussed (and disputed) philosopher of the late 20th century.",quote:"\"There is nothing outside the text.\"",key:"Deconstruction, Différance, Logocentrism"},
+  {name:"Gilles Deleuze",life:"1925–1995",origin:"Paris, France",school:"Post-Structuralism",desc:"Philosophy as creation of concepts. Rhizome vs tree-thinking. Difference in itself. With Guattari: Anti-Oedipus. Immanence as philosophical principle.",quote:"\"A concept is a brick. It can be used to build a courthouse of reason or thrown through a window.\"",key:"Rhizome, Difference, Immanence"},
+  {name:"John Rawls",life:"1921–2002",origin:"Baltimore, USA",school:"Political Philosophy",desc:"Veil of ignorance: choose principles of justice without knowing your place in society. Justice as fairness. The difference principle. Revived political philosophy.",quote:"\"Each person possesses an inviolability founded on justice.\"",key:"Veil of Ignorance, Difference Principle, Fairness"},
+  {name:"Thomas Nagel",life:"1937–",origin:"Belgrade / USA",school:"Philosophy of Mind",desc:"'What is it like to be a bat?' — the subjective character of experience cannot be captured by objective science. The view from nowhere.",quote:"\"Every subjective phenomenon is essentially connected with a single point of view.\"",key:"Subjective Experience, Consciousness, Objectivity"},
+  {name:"Peter Singer",life:"1946–",origin:"Melbourne, Australia",school:"Applied Ethics",desc:"Preference utilitarianism applied rigorously: animal liberation, effective altruism, global poverty. The most practically influential living philosopher.",quote:"\"The question is not, Can they reason? nor, Can they talk? but, Can they suffer?\"",key:"Animal Liberation, Effective Altruism, Utilitarian"},
+  {name:"David Chalmers",life:"1966–",origin:"Sydney, Australia",school:"Philosophy of Mind",desc:"Named the 'hard problem of consciousness.' Even a complete physical account leaves unexplained why there is subjective experience. Argues for property dualism.",quote:"\"Even if we knew everything about the brain, we would not know why there is something it is like to be a brain.\"",key:"Hard Problem, Qualia, Zombie Argument"},
+  {name:"Laozi",life:"~6th c. BC",origin:"China",school:"Taoism",desc:"Mythical or semi-mythical author of the Tao Te Ching. The Tao that can be named is not the eternal Tao. Wu wei: non-action, natural spontaneity.",quote:"\"A journey of a thousand miles begins with a single step.\"",key:"Tao, Wu Wei, Simplicity"},
+  {name:"Confucius",life:"551–479 BC",origin:"Lu, China",school:"Confucianism",desc:"Social harmony through ritual, benevolence, filial piety, and self-cultivation. His thought shaped Chinese civilization for 2,500 years.",quote:"\"The man who asks a question is a fool for a minute; the man who does not ask is a fool for life.\"",key:"Ren, Li, Junzi (Gentleman)"},
+  {name:"Zhuangzi",life:"~369–286 BC",origin:"China",school:"Taoism",desc:"Radical skepticism about knowledge through dazzling paradoxes and stories. The butterfly dream. The cook who carves by Tao. Free and easy wandering.",quote:"\"Once upon a time, I dreamt I was a butterfly.\"",key:"Perspectivism, Wu Wei, Transformation"},
+  {name:"Mencius",life:"372–289 BC",origin:"Zou, China",school:"Confucianism",desc:"Human nature is originally good — a sprout of virtue in every person. Government must nurture the people. Moral psychology of Confucianism.",quote:"\"The great man is he who does not lose his child's heart.\"",key:"Human Nature, Virtue, Governance"},
+  {name:"Gautama Buddha",life:"563–483 BC",origin:"Lumbini, Nepal",school:"Buddhism",desc:"Diagnosed suffering as rooted in craving and ignorance; mapped the Eightfold Path. Neither self nor no-self — the Middle Way between extremes.",quote:"\"The mind is everything. What you think, you become.\"",key:"Four Noble Truths, Anatman, Dependent Origination"},
+  {name:"Mahavira",life:"599–527 BC",origin:"Vaishali, India",school:"Jainism",desc:"The 24th Tirthankara (ford-maker) of Jainism. Non-violence, non-possessiveness, many-sidedness of truth (Anekantavada).",quote:"\"All human beings are miserable due to their own faults, and they themselves can be happy by correcting these faults.\"",key:"Ahimsa, Anekantavada, Non-attachment"},
+  {name:"Al-Ghazali",life:"1058–1111 AD",origin:"Tus, Persia",school:"Islamic Theology / Sufism",desc:"Incoherence of the Philosophers: reason alone cannot reach God. Mystical experience (Sufism) transcends philosophy. Influenced all subsequent Islamic theology.",quote:"\"Trust in God, but tie your camel.\"",key:"Occasionalism, Mysticism, Revival of Sciences"},
+  {name:"Judith Butler",life:"1956–",origin:"Cleveland, USA",school:"Feminist / Queer Theory",desc:"Gender is performative — not a fixed essence but a repeated enactment. Expanded de Beauvoir's insight into the construction of gender and sexuality.",quote:"\"Gender is not something that one is, it is something one does.\"",key:"Performativity, Gender, Power"},
+];
+
+// ── GENERATE PHILOSOPHER CARDS ────────────────────────────────
+const grid = document.getElementById('phil-grid');
+philosophers.forEach((p, i) => {
+  const el = document.createElement('div');
+  el.className = 'phil-card reveal';
+  el.innerHTML = `
+    <div class="phil-num">${String(i+1).padStart(2,'0')}</div>
+    <div class="phil-name">${p.name}</div>
+    <div class="phil-life">${p.life}</div>
+    <div class="phil-origin">⟡ ${p.origin}</div>
+    <span class="phil-school">${p.school}</span>
+    <div class="phil-desc">${p.desc}</div>
+    <div class="phil-quote">${p.quote}</div>
+    <div class="phil-key">Key: ${p.key}</div>
+  `;
+  el.addEventListener('click', () => openModal(p));
+  grid.appendChild(el);
+});
+
+// ── TABS ──────────────────────────────────────────────────────
+function switchTab(id) {
+  document.querySelectorAll('#schools .tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#schools .tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+function switchBookTab(id) {
+  document.querySelectorAll('#books .tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#books .tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btab-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+function openModal(p) {
+  document.getElementById('modal-title').textContent = p.name;
+  document.getElementById('modal-sub').textContent = `${p.life} · ${p.origin} · ${p.school}`;
+  document.getElementById('modal-body').innerHTML = `
+    <p>${p.desc}</p>
+    <h3>Key Quote</h3>
+    <p><em style="color:var(--gold-light)">${p.quote}</em></p>
+    <h3>Core Concepts</h3>
+    <p>${p.key}</p>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', function(e) { if(e.target === this) closeModal(); });
+
+// ── CURSOR ────────────────────────────────────────────────────
+const cur = document.getElementById('cur');
+const cur2 = document.getElementById('cur2');
+let cx=0,cy=0,tx=0,ty=0;
+document.addEventListener('mousemove', e => { tx=e.clientX; ty=e.clientY; cur2.style.left=tx+'px'; cur2.style.top=ty+'px'; });
+function animCursor() { cx+=(tx-cx)*.15; cy+=(ty-cy)*.15; cur.style.left=cx+'px'; cur.style.top=cy+'px'; requestAnimationFrame(animCursor); }
+animCursor();
+
+// ── SCROLL REVEAL ─────────────────────────────────────────────
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e,i) => { if(e.isIntersecting){ setTimeout(()=>e.target.classList.add('visible'), i*60); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ── THREE.JS BACKGROUND ───────────────────────────────────────
+const canvas3d = document.getElementById('c3d');
+const renderer = new THREE.WebGLRenderer({ canvas: canvas3d, antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 2000);
+cam.position.z = 100;
+
+// Particles — golden dust
+const pCount = 3000;
+const pGeo = new THREE.BufferGeometry();
+const pPos = new Float32Array(pCount * 3);
+const pAlpha = new Float32Array(pCount);
+for(let i=0;i<pCount;i++){
+  pPos[i*3]   = (Math.random()-.5)*600;
+  pPos[i*3+1] = (Math.random()-.5)*600;
+  pPos[i*3+2] = (Math.random()-.5)*400;
+  pAlpha[i]   = Math.random();
+}
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos,3));
+const pMat = new THREE.PointsMaterial({ color:0xc9a84c, size:0.6, transparent:true, opacity:0.35, sizeAttenuation:true });
+const particles = new THREE.Points(pGeo, pMat);
+scene.add(particles);
+
+// Icosahedra — philosophical solids
+const solids = [];
+const solidColors = [0xc9a84c, 0x4a7c59, 0x2a4a7a, 0xd4541a];
+for(let i=0;i<12;i++){
+  const geo = i%3===0 ? new THREE.IcosahedronGeometry(Math.random()*6+2, 0) :
+              i%3===1 ? new THREE.OctahedronGeometry(Math.random()*5+2, 0) :
+                        new THREE.TetrahedronGeometry(Math.random()*5+2, 0);
+  const mat = new THREE.MeshBasicMaterial({ color: solidColors[i%4], wireframe:true, transparent:true, opacity: Math.random()*.2+.05 });
+  const m = new THREE.Mesh(geo, mat);
+  m.position.set((Math.random()-.5)*300,(Math.random()-.5)*200,(Math.random()-.5)*150-30);
+  m.userData = { rx:(Math.random()-.5)*.004, ry:(Math.random()-.5)*.004, oy: m.position.y, fs: Math.random()*.0008+.0003, fo: Math.random()*Math.PI*2 };
+  scene.add(m); solids.push(m);
+}
+
+// Orbital rings
+const rings = [];
+for(let i=0;i<5;i++){
+  const rGeo = new THREE.TorusGeometry(40+i*30, .3, 8, 120);
+  const rMat = new THREE.MeshBasicMaterial({ color:0xc9a84c, transparent:true, opacity:.04+i*.01 });
+  const r = new THREE.Mesh(rGeo, rMat);
+  r.rotation.x = Math.random()*Math.PI;
+  r.rotation.y = Math.random()*Math.PI;
+  r.userData = { rx:.0003*(i%2?1:-1), ry:.0002*(i%2?-1:1) };
+  scene.add(r); rings.push(r);
+}
+
+// Grid plane far back
+const gHelper = new THREE.GridHelper(500, 40, 0xc9a84c, 0xc9a84c);
+gHelper.position.y = -120;
+gHelper.material.transparent = true;
+gHelper.material.opacity = 0.04;
+scene.add(gHelper);
+
+let mx=0,my=0;
+document.addEventListener('mousemove', e=>{ mx=(e.clientX/window.innerWidth-.5)*.3; my=(e.clientY/window.innerHeight-.5)*.2; });
+
+const clk = new THREE.Clock();
+function render(){
+  requestAnimationFrame(render);
+  const t = clk.getElapsedTime();
+  particles.rotation.y = t * .008;
+  particles.rotation.x = t * .003;
+  solids.forEach(s => {
+    s.rotation.x += s.userData.rx; s.rotation.y += s.userData.ry;
+    s.position.y = s.userData.oy + Math.sin(t*s.userData.fs*1000+s.userData.fo)*8;
+  });
+  rings.forEach(r => { r.rotation.x += r.userData.rx; r.rotation.y += r.userData.ry; });
+  cam.position.x += (mx*15 - cam.position.x) * .02;
+  cam.position.y += (-my*10 - cam.position.y) * .02;
+  cam.lookAt(0,0,0);
+  renderer.render(scene,cam);
+}
+render();
+
+window.addEventListener('resize',()=>{
+  cam.aspect = window.innerWidth/window.innerHeight;
+  cam.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Rotating quotes in nav
+const quotes = [
+  '"The unexamined life is not worth living" — Socrates',
+  '"I think, therefore I am" — Descartes',
+  '"God is dead" — Nietzsche',
+  '"To be is to be perceived" — Berkeley',
+  '"Man is the measure of all things" — Protagoras',
+  '"The more you know, the more you know you don\'t know" — Aristotle',
+  '"We are what we repeatedly do" — Aristotle',
+  '"Existence precedes essence" — Sartre',
+];
+let qi=0;
+setInterval(()=>{ qi=(qi+1)%quotes.length; document.getElementById('nav-quote').textContent=quotes[qi]; },5000);
+</script>
+</body>
+</html>
